@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-dark">
+  <div class="container-fluid">
+    <p class="navbar-brand text-white mb-1 mt-0">
+      <span class="align-middle fw-bold" th:utext="${authUser.username}"></span>
+      <span class="align-middle">with roles:</span>
+      <span class="align-middle" th:utext="${authUser.rolesString}"></span>
+    </p>
+    <form th:action="@{/logout}" method="post">
+      <button type="submit" class="btn btn-dark text-secondary fs-5 fw-bold mb-1 mt-0">Logout</button>
+    </form>
+  </div>
+</nav>
+
+<section>
+  <div class="container-fluid">
+    <div class="row">
+
+      <!-- User to admin navigation -->
+      <div class="col-2">
+        <div class="nav flex-column nav-pills pt-4" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+          <button class="nav-link"
+                  id="v-pills-admin-tab"
+                  data-bs-toggle="pill"
+                  data-bs-target="#v-pills-admin"
+                  type="button"
+                  role="tab"
+                  aria-controls="v-pills-admin"
+                  aria-selected="false"
+                  sec:authorize="hasAuthority('ROLE_ADMIN')">Admin
+          </button>
+          <button class="nav-link"
+                  id="v-pills-user-tab"
+                  data-bs-toggle="pill"
+                  data-bs-target="#v-pills-user"
+                  type="button"
+                  role="tab"
+                  aria-controls="v-pills-user"
+                  aria-selected="false"
+                  sec:authorize="hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')">User
+          </button>
+        </div>
+      </div>
+      <!-- User to admin navigation end -->
+
+      <div class="col-10">
+        <div class="container-fluid">
+          <div class="tab-content" id="v-pills-tabContent">
+            <div class="tab-pane fade"
+                 id="v-pills-admin"
+                 role="tabpanel"
+                 aria-labelledby="v-pills-admin-tab"
+                 sec:authorize="hasAuthority('ROLE_ADMIN')">
+              <h1 class="d-flex align-content-center flex-wrap m-2 fw-bold">Admin panel</h1>
+              <div class="container-fluid">
+                <ul class="nav nav-tabs" id="admin_panel-tab" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active"
+                            id="home-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#home"
+                            type="button"
+                            role="tab"
+                            aria-controls="home"
+                            aria-selected="true">Users table
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link"
+                            id="new-user-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#new"
+                            type="button"
+                            role="tab"
+                            aria-controls="newUser"
+                            aria-selected="false">New user
+                    </button>
+                  </li>
+                </ul>
+                <div class="tab-content" id="admin_panel-tabContent">
+
+                  <div class="tab-pane fade show active"
+                       id="home"
+                       role="tabpanel"
+                       aria-labelledby="home-tab">
+                    <div class="card">
+                      <h5 class="card-header">All users</h5>
+                      <div class="card-body bg-white text-white">
+                        <table class="table table-striped table-hover">
+                          <thead>
+                          <tr>
+                            <th>First name</th>
+                            <th>Last name</th>
+                            <th>Year of birth</th>
+                            <th>Username</th>
+                            <th>Roles</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                          </tr>
+                          </thead>
+                          <tbody id="allUsers"></tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="tab-pane fade"
+                       id="new"
+                       role="tabpanel"
+                       aria-labelledby="home-tab">
+                    <div class="card">
+                      <h4 class="card-header m-1">New user</h4>
+                      <div class="card-body bg-white text-center align-self-center">
+                        <form>
+                          <div>
+                            <label for="newFirstName" class="fw-bold">First name</label>
+                            <input class="form-control" type="text" id="newFirstName"/>
+                            <div style="color:red" id="newFirstNameError"></div>
+                            <br/>
+                          </div>
+
+                          <div>
+                            <label for="newLastName" class="fw-bold">Last name</label>
+                            <input class="form-control" type="text" id="newLastName"/>
+                            <div style="color:red" id="newLastNameError"></div>
+                            <br/>
+                          </div>
+
+                          <div>
+                            <label for="newYearOfBirth" class="fw-bold">Year of birth</label>
+                            <input class="form-control" type="number" id="newYearOfBirth"/>
+                            <div style="color:red" id="newYearOfBirthError"></div>
+                            <br/>
+                          </div>
+
+                          <div>
+                            <label for="newUsername" class="fw-bold">Username</label>
+                            <input class="form-control" type="text" id="newUsername"/>
+                            <div style="color:red" id="newUsernameError"></div>
+                            <br/>
+                          </div>
+
+                          <div>
+                            <label for="newPassword" class="fw-bold">Password</label>
+                            <input class="form-control" type="password" id="newPassword"/>
+                            <div style="color:red" id="newPasswordError"></div>
+                            <br/>
+                          </div>
+
+                          <div>
+                            <label for="newRoles" class="fw-bold">Roles</label>
+                            <select class="form-control mw-100" id="newRoles" style="width: 360px; height: 65px" name="roles" multiple="multiple">
+                              <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.name}"></option>
+                            </select>
+                            <div style="color: red" id="newRolesError" ></div>
+                            <br/>
+                          </div>
+                        </form>
+                        <button type="button" class="btn btn-success" id="addUser" onclick="addUser()">Add new user</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane fade hidden"
+                 id="v-pills-user"
+                 role="tabpanel"
+                 aria-labelledby="v-pills-user-tab"
+                 sec:authorize="hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')">
+              <h1 class="d-flex align-content-center flex-wrap m-2 fw-bold">User information page</h1>
+              <div class="tab-content" id="user_panel-tabContent">
+                <ul class="nav nav-tabs">
+                  <li class="nav-link active" id="user-tab" data-toggle="tab" data-bs-target="#user-home">About user</li>
+                </ul>
+
+                <div class="tab-pane fade show active" id="user-home" role="tabpanel" aria-labelledby="user-tab">
+                  <div class="card">
+                    <h4 class="card-header m-1">User info</h4>
+                    <div class="card-body bg-white text-white">
+                      <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                          <th>First Name</th>
+                          <th>Last Name</th>
+                          <th>Year of Birth</th>
+                          <th>Username</th>
+                          <th>Roles</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr>
+                          <td th:utext="${authUser.firstName}">firstName</td>
+                          <td th:utext="${authUser.lastName}">lastName</td>
+                          <td th:utext="${authUser.yearOfBirth}">yearOfBirth</td>
+                          <td th:utext="${authUser.username}">username</td>
+                          <td th:utext="${authUser.rolesString}">roles</td>
+                        </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="modal fade text-black" id="editModal" aria-labelledby="edit" aria-hidden="true"
+     sec:authorize="hasAuthority('ROLE_ADMIN')">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="edit">Edit user</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form class="modal-body text-center align-self-center" id="editForm">
+        <div class="col-md">
+          <div>
+            <label for="editId" class="fw-bold">ID</label>
+            <input name="id" type="text" class="form-control text-center" id="editId" disabled/>
+            <br/>
+          </div>
+
+          <div>
+            <label for="editFirstName" class="fw-bold">First name</label>
+            <input name="name" type="text" class="form-control text-center" id="editFirstName"/>
+            <div id="editFirstNameError" style="color: red"></div>
+            <br/>
+          </div>
+
+          <div>
+            <label for="editLastName" class="fw-bold">Last name</label>
+            <input name="lastName" type="text" class="form-control text-center" id="editLastName"/>
+            <div id="editLastNameError" style="color: red"></div>
+            <br/>
+          </div>
+
+          <div>
+            <label for="editYearOfBirth" class="fw-bold">Year of Birth</label>
+            <input name="age" type="number" class="form-control text-center" id="editYearOfBirth"/>
+            <div id="editYearOfBirthError" style="color: red"></div>
+            <br/>
+          </div>
+
+          <div>
+            <label for="editUsername" class="fw-bold">Username</label>
+            <input name="username" type="text" class="form-control text-center" id="editUsername"/>
+            <div id="editUsernameError" style="color: red"></div>
+            <br/>
+          </div>
+
+          <div>
+            <label for="editPassword" class="fw-bold">Password</label>
+            <input name="password" type="password" class="form-control text-center" id="editPassword"/>
+            <div id="editPasswordError" style="color: red"></div>
+            <br/>
+          </div>
+        </div>
+
+        <div>
+          <label for="roles" class="fw-bold">Roles</label>
+          <select class="form-control mw-100" id="roles" style="width: 250px; height: 65px" name="roles" multiple="multiple">
+            <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.name}"></option>
+          </select>
+          <div id="editRolesError" style="color: red"></div>
+          <br/>
+        </div>
+      </form>
+
+      <div class="modal-footer align-content-end">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeEdit">Close</button>
+        <button type="button" class="btn btn-danger" onclick="sendEdit()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade text-black" id="deleteModal" aria-labelledby="delete" aria-hidden="true"
+     sec:authorize="hasAuthority('ROLE_ADMIN')">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="delete">Delete user</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form class="modal-body text-center" id="deleteForm" th:method="DELETE">
+        <div class="col-md align-self-center">
+          <div>
+            <label for="deleteId" class="fw-bold">ID</label>
+            <input name="id" type="text" class="form-control text-center" id="deleteId" disabled/>
+            <br/>
+          </div>
+
+          <div>
+            <label for="deleteFirstName" class="fw-bold">First name</label>
+            <input name="name" type="text" class="form-control text-center" id="deleteFirstName" disabled/>
+            <br/>
+          </div>
+
+          <div>
+            <label for="deleteLastName" class="fw-bold">Last name</label>
+            <input name="lastName" type="text" class="form-control text-center" id="deleteLastName" disabled/>
+            <br/>
+          </div>
+
+          <div>
+            <label for="deleteYearOfBirth"><b>Year of Birth</b></label>
+            <input name="age" type="number" class="form-control text-center" id="deleteYearOfBirth" disabled/>
+            <br/>
+          </div>
+
+          <div>
+            <label for="deleteUsername"><b>Username</b></label>
+            <input name="username" type="text" class="form-control text-center" id="deleteUsername" disabled/>
+            <br/>
+          </div>
+        </div>
+      </form>
+
+      <div class="modal-footer align-content-end">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeDelete">Close</button>
+        <button type="button" class="btn btn-danger" onclick="sendDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script th:src="@{/js/script.js}" onload="listAllUsers()"></script>
+
+</body>
+</html>
