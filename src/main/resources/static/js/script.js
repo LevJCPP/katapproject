@@ -1,6 +1,6 @@
 function listAllUsers() {
     const table = document.getElementById("allUsers");
-    fetch("http://localhost:8080/api/users").then(res => res.json().then(data => {
+    fetch("http://localhost:8080/api/admin/users").then(res => res.json().then(data => {
         table.innerHTML = "";
         data.forEach(user => {
             let row = table.insertRow();
@@ -52,7 +52,7 @@ function fillEditModal(id) {
     document.getElementById("editRolesError").innerText = "";
     document.getElementById("editPassword").value = "";
 
-    fetch("http://localhost:8080/api/user/"+id).then(res => res.json().then(user => {
+    fetch("http://localhost:8080/api/admin/user/"+id).then(res => res.json().then(user => {
         document.getElementById("editForm").action = "/api/admin";
         document.getElementById("editId").value = user.id;
         document.getElementById("editFirstName").value = user.firstName;
@@ -127,7 +127,7 @@ function sendEdit() {
 }
 
 function fillDeleteModal(id) {
-    fetch("http://localhost:8080/api/user/"+id).then(res => res.json().then(user => {
+    fetch("http://localhost:8080/api/admin/user/"+id).then(res => res.json().then(user => {
         document.getElementById("deleteForm").action = "/api/admin/"+id;
         document.getElementById("deleteId").value = user.id;
         document.getElementById("deleteFirstName").value = user.firstName;

@@ -13,11 +13,10 @@ import ru.lev.katapproject.service.RoleService;
 import ru.lev.katapproject.service.UserService;
 import ru.lev.katapproject.util.UserConverter;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/admin")
 public class AdminController {
 
     private final UserService userService;
@@ -31,12 +30,12 @@ public class AdminController {
         this.roleService = roleService;
     }
 
-    @GetMapping("/admin")
+    @GetMapping()
     public ResponseEntity<List<Role>> getRoles() {
         return new ResponseEntity<>(roleService.findAll(), HttpStatus.OK);
     }
 
-    @PostMapping("/admin")
+    @PostMapping()
     public ResponseEntity<List<FieldError>> addUser(@RequestBody UserDTO dto, BindingResult bindingResult) {
         User user = userConverter.toUser(dto, bindingResult);
 
@@ -48,14 +47,24 @@ public class AdminController {
         return new ResponseEntity<>(bindingResult.getFieldErrors(), HttpStatus.OK);
     }
 
-    @PatchMapping("/admin")
+    @PatchMapping()
     public ResponseEntity<List<FieldError>> editUser(@RequestBody UserDTO dto, BindingResult bindingResult) {
         return addUser(dto, bindingResult);
     }
 
-    @DeleteMapping("/admin/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteUserById(@PathVariable Long id) {
         userService.deleteById(id);
         return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @GetMapping("/users")
+    public List<UserDTO> getAllUsers() {
+        return userConverter.toDTO(userService.findAll());
+    }
+
+    @GetMapping("/user/{id}")
+    public UserDTO getUserById(@PathVariable Long id) {
+        return userConverter.toDTO(userService.findById(id));
     }
 }

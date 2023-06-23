@@ -18,14 +18,12 @@ public class UserConverter {
 
     private final UserService userService;
     private final RoleService roleService;
-    private final PasswordEncoder passwordEncoder;
     private final UserValidator userValidator;
 
     @Autowired
-    public UserConverter(UserService userService, RoleService roleService, PasswordEncoder passwordEncoder, UserValidator userValidator) {
+    public UserConverter(UserService userService, RoleService roleService, UserValidator userValidator) {
         this.userService = userService;
         this.roleService = roleService;
-        this.passwordEncoder = passwordEncoder;
         this.userValidator = userValidator;
     }
 
@@ -41,10 +39,6 @@ public class UserConverter {
             user.setPassword(dto.getPassword());
         }
         userValidator.validate(user, bindingResult);
-
-        if (!dto.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        }
         return user;
     }
 
