@@ -6,34 +6,34 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import ru.lev.katapproject.model.Role;
 import ru.lev.katapproject.model.User;
 import ru.lev.katapproject.model.UserDTO;
+import ru.lev.katapproject.service.RoleService;
 import ru.lev.katapproject.service.UserService;
 import ru.lev.katapproject.util.UserConverter;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-public class HomeController {
+public class AdminController {
 
     private final UserService userService;
     private final UserConverter userConverter;
+    private final RoleService roleService;
 
     @Autowired
-    public HomeController(UserService userService, UserConverter userConverter) {
+    public AdminController(UserService userService, UserConverter userConverter, RoleService roleService) {
         this.userService = userService;
         this.userConverter = userConverter;
+        this.roleService = roleService;
     }
 
-    @GetMapping("/users")
-    public List<UserDTO> getAllUsers() {
-        return userConverter.toDTO(userService.findAll());
-    }
-
-    @GetMapping("/user/{id}")
-    public UserDTO getUserById(@PathVariable Long id) {
-        return userConverter.toDTO(userService.findById(id));
+    @GetMapping("/admin")
+    public ResponseEntity<List<Role>> getRoles() {
+        return new ResponseEntity<>(roleService.findAll(), HttpStatus.OK);
     }
 
     @PostMapping("/admin")

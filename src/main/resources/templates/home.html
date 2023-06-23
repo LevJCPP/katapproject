@@ -17,9 +17,9 @@
 <nav class="navbar navbar-dark bg-dark">
   <div class="container-fluid">
     <p class="navbar-brand text-white mb-1 mt-0">
-      <span class="align-middle fw-bold" th:utext="${authUser.username}"></span>
+      <span class="align-middle fw-bold" id="title-username"></span>
       <span class="align-middle">with roles:</span>
-      <span class="align-middle" th:utext="${authUser.rolesString}"></span>
+      <span class="align-middle" id="title-roles"></span>
     </p>
     <form th:action="@{/logout}" method="post">
       <button type="submit" class="btn btn-dark text-secondary fs-5 fw-bold mb-1 mt-0">Logout</button>
@@ -164,9 +164,7 @@
 
                           <div>
                             <label for="newRoles" class="fw-bold">Roles</label>
-                            <select class="form-control mw-100" id="newRoles" style="width: 360px; height: 65px" name="roles" multiple="multiple">
-                              <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.name}"></option>
-                            </select>
+                            <select class="form-control mw-100" id="newRoles" style="width: 360px; height: 65px" name="roles" multiple="multiple"></select>
                             <div style="color: red" id="newRolesError" ></div>
                             <br/>
                           </div>
@@ -207,11 +205,11 @@
 
                         <tbody>
                         <tr>
-                          <td th:utext="${authUser.firstName}">firstName</td>
-                          <td th:utext="${authUser.lastName}">lastName</td>
-                          <td th:utext="${authUser.yearOfBirth}">yearOfBirth</td>
-                          <td th:utext="${authUser.username}">username</td>
-                          <td th:utext="${authUser.rolesString}">roles</td>
+                          <td id="auth-firstName">firstName</td>
+                          <td id="auth-lastName">lastName</td>
+                          <td id="auth-yearOfBirth">yearOfBirth</td>
+                          <td id="auth-username">username</td>
+                          <td id="auth-roles">roles</td>
                         </tr>
                         </tbody>
                       </table>
@@ -282,9 +280,7 @@
 
         <div>
           <label for="roles" class="fw-bold">Roles</label>
-          <select class="form-control mw-100" id="roles" style="width: 250px; height: 65px" name="roles" multiple="multiple">
-            <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.name}"></option>
-          </select>
+          <select class="form-control mw-100" id="roles" style="width: 250px; height: 65px" name="roles" multiple="multiple"></select>
           <div id="editRolesError" style="color: red"></div>
           <br/>
         </div>
@@ -349,7 +345,7 @@
   </div>
 </div>
 
-<script th:src="@{/js/script.js}" onload="listAllUsers()"></script>
+<script th:src="@{/js/script.js}" onload="listAllUsers(); fillAuth(); listRoles()"></script>
 
 </body>
 </html>

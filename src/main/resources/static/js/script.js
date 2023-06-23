@@ -12,8 +12,35 @@ function listAllUsers() {
             row.insertCell(5).innerHTML = "<button type='button' class='btn btn-sm btn-primary' data-bs-toggle='modal' data-bs-target='#editModal' onclick='fillEditModal("+user.id+")'>Edit</button>"
             row.insertCell(6).innerHTML = "<button type='button' class='btn btn-sm btn-primary' data-bs-toggle='modal' data-bs-target='#deleteModal' onclick='fillDeleteModal("+user.id+")'>Delete</button>"
         });
-        }
-    ));
+    }));
+}
+
+function fillAuth() {
+    fetch("http://localhost:8080/api/user").then(res => res.json().then(data => {
+        document.getElementById("title-username").innerHTML = data.username;
+        document.getElementById("title-roles").innerHTML = data.roles.join(", ");
+        document.getElementById("auth-firstName").innerHTML = data.firstName;
+        document.getElementById("auth-lastName").innerHTML = data.lastName;
+        document.getElementById("auth-yearOfBirth").innerHTML = data.yearOfBirth;
+        document.getElementById("auth-username").innerHTML = data.username;
+        document.getElementById("auth-roles").innerHTML = data.roles.join(", ");
+    }));
+}
+
+function listRoles() {
+    const select1 = document.getElementById("newRoles");
+    const select2 = document.getElementById("roles");
+    fetch("http://localhost:8080/api/admin").then(res => res.json().then(data => {
+        select1.innerHTML = "";
+        select2.innerHTML = "";
+        data.forEach(role => {
+            let option = document.createElement("option");
+            option.value = role.id;
+            option.text = role.name;
+            select1.appendChild(option);
+            select2.appendChild(option);
+        })
+    }));
 }
 
 function fillEditModal(id) {
