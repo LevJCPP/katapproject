@@ -7,6 +7,7 @@ import ru.lev.katapproject.model.Role;
 import ru.lev.katapproject.repository.RoleRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -25,8 +26,14 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Role findByName(String name) {
-        return roleRepository.findByName(name).orElse(null);
+    public Optional<Role> findByName(String name) {
+        return roleRepository.findByName(name);
+    }
+
+    @Override
+    public Role loadByName(String name) {
+        return roleRepository.findByName(name).orElseThrow(
+                () -> new IllegalArgumentException("Role not found"));
     }
 
     @Override

@@ -34,11 +34,12 @@ function listRoles() {
         select1.innerHTML = "";
         select2.innerHTML = "";
         data.forEach(role => {
-            let option = document.createElement("option");
-            option.value = role.id;
-            option.text = role.name;
-            select1.appendChild(option);
-            select2.appendChild(option);
+            let option1 = document.createElement("option");
+            let option2 = document.createElement("option");
+            option1.text = role;
+            option2.text = role;
+            select1.appendChild(option1);
+            select2.appendChild(option2);
         })
     }));
 }
@@ -51,6 +52,10 @@ function fillEditModal(id) {
     document.getElementById("editPasswordError").innerText = "";
     document.getElementById("editRolesError").innerText = "";
     document.getElementById("editPassword").value = "";
+    let options = document.getElementById("roles").options;
+    for (let i = 0; i < options.length; i++) {
+        options[i].selected = false;
+    }
 
     fetch("http://localhost:8080/api/admin/user/"+id).then(res => res.json().then(user => {
         document.getElementById("editForm").action = "/api/admin";
@@ -60,7 +65,6 @@ function fillEditModal(id) {
         document.getElementById("editYearOfBirth").value = user.yearOfBirth;
         document.getElementById("editUsername").value = user.username;
 
-        let options = document.getElementById("roles").options;
         for (let i = 0; i < options.length; i++) {
             for (let j = 0; j < user.roles.length; j++) {
                 if (user.roles[j] === options[i].text) {

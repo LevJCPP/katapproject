@@ -1,7 +1,6 @@
 package ru.lev.katapproject.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.lev.katapproject.model.Role;
 import ru.lev.katapproject.model.User;
@@ -16,48 +15,44 @@ public class DataInit {
 
     private final UserService userService;
     private final RoleService roleService;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public DataInit(UserService userService, RoleService roleService, PasswordEncoder passwordEncoder) {
+    public DataInit(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @PostConstruct
     private void dataInit() {
-        Role adminRole = new Role();
-        if (roleService.findByName("Admin") == null) {
+        if (roleService.findByName("Admin").isEmpty()) {
+            Role adminRole = new Role();
             adminRole.setName("Admin");
             roleService.save(adminRole);
-
-            if (userService.findByUsername("admin").isEmpty()) {
-                User admin = new User();
-                admin.setFirstName("admin first");
-                admin.setLastName("admin last");
-                admin.setYearOfBirth(1950);
-                admin.setUsername("admin");
-                admin.setPassword(passwordEncoder.encode("admin"));
-                admin.setRoles(List.of(adminRole));
-                userService.save(admin);
-            }
         }
-        Role userRole = new Role();
-        if (roleService.findByName("User") == null) {
+        if (userService.findByUsername("admin").isEmpty()) {
+            User admin = new User();
+            admin.setFirstName("admin first");
+            admin.setLastName("admin last");
+            admin.setYearOfBirth(1950);
+            admin.setUsername("admin");
+            admin.setPassword("admin");
+            admin.setRoles(List.of(roleService.loadByName("Admin")));
+            userService.create(admin);
+        }
+        if (roleService.findByName("User").isEmpty()) {
+            Role userRole = new Role();
             userRole.setName("User");
             roleService.save(userRole);
-
-            if (userService.findByUsername("user").isEmpty()) {
-                User user = new User();
-                user.setFirstName("user first");
-                user.setLastName("user last");
-                user.setYearOfBirth(2000);
-                user.setUsername("user");
-                user.setPassword(passwordEncoder.encode("user"));
-                user.setRoles(List.of(userRole));
-                userService.save(user);
-            }
+        }
+        if (userService.findByUsername("user").isEmpty()) {
+            User user = new User();
+            user.setFirstName("user first");
+            user.setLastName("user last");
+            user.setYearOfBirth(2000);
+            user.setUsername("user");
+            user.setPassword("user");
+            user.setRoles(List.of(roleService.loadByName("User")));
+            userService.create(user);
         }
     }
 }

@@ -1,11 +1,11 @@
 package ru.lev.katapproject.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.lev.katapproject.model.User;
-import ru.lev.katapproject.model.UserDTO;
+import ru.lev.katapproject.model.UserResponseDTO;
 import ru.lev.katapproject.service.UserService;
 import ru.lev.katapproject.util.UserConverter;
 
@@ -24,8 +24,9 @@ public class UserController {
         this.userConverter = userConverter;
     }
 
-    @GetMapping()
-    public UserDTO getAuthUser(Principal principal) {
-        return userConverter.toDTO(userService.findByUsername(principal.getName()).orElse(new User()));
+    @GetMapping
+    public UserResponseDTO getAuthUser(Principal principal) {
+        return userConverter.toDTO(userService.findByUsername(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found")));
     }
 }

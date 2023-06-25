@@ -1,14 +1,13 @@
 package ru.lev.katapproject.service;
 
-import org.springframework.security.core.userdetails.UserDetailsService;
 import ru.lev.katapproject.model.User;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface UserService extends UserDetailsService {
+public interface UserService {
 
-    void save(User user);
+    void create(User user);
 
     User findById(Long id);
 
@@ -16,8 +15,7 @@ public interface UserService extends UserDetailsService {
 
     Optional<User> findByUsername(String username);
 
-    void deleteById(Long id);
+    void update(User user);
 
-    @Override
-    User loadUserByUsername(String username);
+    void deleteById(Long id);
 }

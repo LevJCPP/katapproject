@@ -49,14 +49,26 @@ public class UserValidator implements Validator {
             }
         }
 
+        if ((user.getRoles() == null) || user.getRoles().isEmpty()) {
+            errors.rejectValue("roles", "", "Required field");
+        }
+    }
+
+    public void validateCreate(User user, Errors errors) {
+        validate(user, errors);
+
         if ((user.getPassword() == null) || user.getPassword().isEmpty()) {
             errors.rejectValue("password", "", "Required field");
         } else if (user.getPassword().length() < 4) {
             errors.rejectValue("password", "", "Must be at least 4 characters long");
         }
+    }
 
-        if ((user.getRoles() == null) || user.getRoles().isEmpty()) {
-            errors.rejectValue("roles", "", "Required field");
+    public void validateUpdate(User user, Errors errors) {
+        validate(user, errors);
+
+        if (!((user.getPassword() == null) || user.getPassword().isEmpty()) && (user.getPassword().length() < 4)) {
+            errors.rejectValue("password", "", "Must be at least 4 characters long");
         }
     }
 }

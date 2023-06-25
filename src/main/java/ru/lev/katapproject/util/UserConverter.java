@@ -1,14 +1,9 @@
 package ru.lev.katapproject.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.BindingResult;
-import ru.lev.katapproject.model.Role;
-import ru.lev.katapproject.model.User;
-import ru.lev.katapproject.model.UserDTO;
+import ru.lev.katapproject.model.*;
 import ru.lev.katapproject.service.RoleService;
-import ru.lev.katapproject.service.UserService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,34 +11,38 @@ import java.util.stream.Collectors;
 @Component
 public class UserConverter {
 
-    private final UserService userService;
     private final RoleService roleService;
-    private final UserValidator userValidator;
 
     @Autowired
-    public UserConverter(UserService userService, RoleService roleService, UserValidator userValidator) {
-        this.userService = userService;
+    public UserConverter(RoleService roleService) {
         this.roleService = roleService;
-        this.userValidator = userValidator;
     }
 
-    public User toUser(UserDTO dto, BindingResult bindingResult) {
-        User user = (dto.getId() != null) ? userService.findById(dto.getId()) : new User();
+    public User toUser(UserCreateDTO dto) {
+        User user = toUser((UserDTO) dto);
+        user.setPassword(dto.getPassword());
+        return user;
+    }
+
+    public User toUser(UserUpdateDTO dto) {
+        User user = toUser((UserDTO) dto);
+        user.setId(dto.getId());
+        user.setPassword(dto.getPassword());
+        return user;
+    }
+
+    public User toUser(UserDTO dto) {
+        User user = new User();
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setYearOfBirth(dto.getYearOfBirth());
         user.setUsername(dto.getUsername());
-        user.setRoles(dto.getRoles().stream().map(roleService::findByName).collect(Collectors.toList()));
-
-        if (!dto.getPassword().isEmpty()) {
-            user.setPassword(dto.getPassword());
-        }
-        userValidator.validate(user, bindingResult);
+        user.setRoles(dto.getRoles().stream().map(roleService::loadByName).collect(Collectors.toList()));
         return user;
     }
 
-    public UserDTO toDTO(User user) {
-        UserDTO dto = new UserDTO();
+    public UserResponseDTO toDTO(User user) {
+        UserResponseDTO dto = new UserResponseDTO();
         dto.setId(user.getId());
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
@@ -53,7 +52,7 @@ public class UserConverter {
         return dto;
     }
 
-    public List<UserDTO> toDTO(List<User> userList) {
+    public List<UserResponseDTO> toDTO(List<User> userList) {
         return userList.stream().map(this::toDTO).collect(Collectors.toList());
     }
 }
